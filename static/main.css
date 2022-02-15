@@ -1,0 +1,255 @@
+body {
+    background-color: gray;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+nav {
+    background-color: black;
+    height: 30px;
+    width: 1175px;
+    margin: 0px;
+    padding: 10px;
+}
+
+nav ul {
+    margin-top: 7.5px;
+}
+
+nav ul li {
+    color: white;
+    list-style-type: none;
+    margin: none;
+    display: inline-block;
+    width: 150px;
+}
+
+a {
+    color:white;
+    text-decoration: none;
+}
+table{
+    padding-left: 400px;
+    table-layout: fixed;
+}
+
+table th{
+    background-color: darkgray;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    width:110px;
+    min-width: 110px;
+}
+table td{
+    background-color: rgb(0, 255, 0);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.time{
+    background-color: darkgray;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    margin: 100px;
+    padding: 10px;
+}
+
+.BIOL1105 {
+    background-color: rgb(179, 255, 0);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    position:absolute;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+#BIOL11051{
+    width: 130px;
+    height: 40px;
+    top:92px;
+    left: 534px;
+}
+
+#BIOL11052{
+    width: 130px;
+    height: 40px;
+    top:92px;
+    left: 666px;
+}
+#BIOL11053{
+    width: 130px;
+    height: 120px;
+    top:92px;
+    left: 798px;
+}
+#BIOL11054{
+    width: 130px;
+    height: 40px;
+    top:92px;
+    left: 930px;
+}
+#BIOL11055{
+    width: 130px;
+    height: 40px;
+    top:92px;
+    left: 1062px;
+}
+
+#semester{
+    position: absolute;
+    top: 100px;
+    left: 55px;
+    padding: 8px 0px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    color: #333333;
+}
+
+#department{
+    position: absolute;
+    top: 150px;
+    left: 55px;
+    padding: 8px 0px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    color: #333333;
+    visibility: hidden;
+}
+
+#number{
+    position: absolute;
+    top: 200px;
+    left: 55px;
+    padding: 8px 0px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    color: #333333;
+    visibility: hidden;
+}
+
+select:hover{
+    outline: none;
+    border: 1px solid #bbbbbb;
+}
+
+select option{
+    background: #ffffff;
+}
+
+.flex-container {
+    position: absolute;
+    top:250px;
+    left: 50px;
+    display: block;
+    width: 300px;
+    height: 400px;
+  align-items: center;
+}
+
+.flex-container.filebrowse-outer {
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.inDiv{
+    pointer-events: none;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.display{
+    text-align: center;
+    display: block;
+    background-color: rgb(37, 37, 37);
+    border-radius: 10px;
+    width: 95%;
+    padding: 1px 0px;
+    margin-bottom: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    border: solid 2px;
+}
+
+#BIOL1105S1{
+    border-color: green;
+}
+
+.scheduleItem{
+    cursor: pointer;
+    transition: all 0.4s ease;
+    /*color: magenta, blue, purple, black, peru, blueviolet;*/
+    text-align: center;
+    color: white;
+}
+
+.scheduleItem:hover{
+    transform: scale(1.02);
+}
+
+.flex-container.filebrowse-outer :hover{
+    transform: translateX(10px);
+    transition: transform 0.5s;
+    cursor: pointer;
+}
+
+.button {
+    position: absolute;
+    visibility: hidden;
+    top:200px;
+    left:160px;
+    border-radius: 4px;
+    background-color: goldenrod;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 14px;
+    padding: 10px 0px;
+    width: 130px;
+    transition: all 0.5s;
+    cursor: pointer;
+  }
+  
+  .button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  
+  .button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+  
+  .button:hover span {
+    padding-right: 25px;
+  }
+  
+  .button:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+@media screen and (min-width: 1175px) {
+    nav {
+        width: 98.3%;
+    }
+  }
