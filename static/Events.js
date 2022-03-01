@@ -11,6 +11,7 @@ xml.send(dataSend);*/
 const semesterDropdown = document.getElementById("semester");
 const departmentDropdown = document.getElementById("department");
 const numberDropdown = document.getElementById("number");
+const loadingCircle = document.getElementById("loader");
 btn = document.getElementsByClassName("button");
 scrollPlace = document.getElementsByClassName("flex-container filebrowse-outer");
 
@@ -19,6 +20,10 @@ var splitTable;
 var options;
 var numItems = 0;
 bgColors = ["peru", "blueviolet", "blue", "purple", "magenta", "black"];
+
+function setVisibility(element, visibility){
+    element.style.visibility = visibility;
+}
 
 function isHidden(el) {
     var style = window.getComputedStyle(el);
@@ -33,6 +38,19 @@ function removeChildren(parent){
 
 function warn(warning){
     alert(warning);
+}
+
+function getRandColor(){
+    let rand1 = Math.random() * 256;
+    let rand2 = Math.random() * 256;
+    let rand3 = Math.random() * 256;
+    while ((rand1 < 70) && (rand2 < 70) && (rand3 < 70)){
+        rand1 = Math.random() * 256;
+        rand2 = Math.random() * 256;
+        rand3 = Math.random() * 256;
+    }
+    let colorStr = "rgb(" + rand1 + ", " + rand2 + ", " + rand3 + ")";
+    return colorStr;
 }
 
 semesterDropdown.addEventListener("change", function(e) {
@@ -51,7 +69,6 @@ semesterDropdown.addEventListener("change", function(e) {
         });
 
         removeChildren(numberDropdown);
-        btn[0].style.visibility = "hidden";
 
         //stop options from bein selected
         optionsInSem = semesterDropdown.getElementsByTagName("option");
@@ -64,6 +81,7 @@ semesterDropdown.addEventListener("change", function(e) {
             optionsInDep[i].disabled = true;
         }
     
+        setVisibility(loadingCircle, "visible");
         xml.open("POST", "/func" ,true);//"{{url_for('func.func')}}",true); 
         xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
         xml.send(dataSend);
@@ -81,18 +99,18 @@ departmentDropdown.addEventListener("change", function(e) {
     });
 
     removeChildren(numberDropdown);
-    btn[0].style.visibility = "hidden";
 
     optionsInSem = semesterDropdown.getElementsByTagName("option");
-        for (let i = 1; i < optionsInSem.length; i++) {
-            optionsInSem[i].disabled = true;
-        }
+    for (let i = 1; i < optionsInSem.length; i++) {
+        optionsInSem[i].disabled = true;
+    }
 
-        optionsInDep = departmentDropdown.getElementsByTagName("option");
-        for (let i = 1; i < optionsInDep.length; i++) {
-            optionsInDep[i].disabled = true;
-        }
+    optionsInDep = departmentDropdown.getElementsByTagName("option");
+    for (let i = 1; i < optionsInDep.length; i++) {
+        optionsInDep[i].disabled = true;
+    }
 
+    setVisibility(loadingCircle, "visible");
     xml.open("POST", "/func" ,true);//"{{url_for('func.func')}}",true); 
     xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xml.send(dataSend);
@@ -105,6 +123,7 @@ numberDropdown.addEventListener("change", function(e) {
     }
 });
 
+// get classes button
 btn[0].addEventListener("click", function(e) {
     requestedClass = numberDropdown.value;
     stored = document.getElementsByClassName("inDiv");
@@ -195,6 +214,11 @@ btn[0].addEventListener("click", function(e) {
             //set datasets
             newDiv.dataset.classId = options[i][0];
             newDiv.dataset.color = colorString;
+            if (total == -1){
+                newDiv.dataset.seats = "FULL"
+            } else {
+                newDiv.dataset.seats = taken + "/" + total;
+            }
             newDiv.dataset.section = options[i][4];
             newDiv.dataset.credits = options[i][5];
             newDiv.dataset.startTime = options[i][6];
@@ -250,8 +274,8 @@ btn[0].addEventListener("click", function(e) {
                         }
                     }
                 } else {
-                    if (numItems >= 6){
-                        warn("you can only add 6 classes at once!");
+                    if (numItems >= 10){
+                        warn("you can only add 10 classes at once!");
                         return;
                     }
                     numItems++;
@@ -261,6 +285,7 @@ btn[0].addEventListener("click", function(e) {
                         }
                     }
                     this.style.color = "cyan";
+                    let randColor = getRandColor();
                     //M 534, T 666, W 798, TH 930, F 1062
                     //top: 92 + 42xtime
                     if (this.dataset.m == "true"){
@@ -271,9 +296,9 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTime;
                         scheduleDiv.dataset.endTime = this.dataset.endTime;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "<br/>" + this.dataset.seats +  "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -283,35 +308,44 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "534px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTime);
-                        let endTime = parseInt(this.dataset.endTime) + 10;
+                        let endTime = parseInt(this.dataset.endTime);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -352,7 +386,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
                         scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -366,31 +400,43 @@ btn[0].addEventListener("click", function(e) {
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+
+                        // calculate size
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
+
                         let isNightClass = this.dataset.isNightL
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -420,7 +466,6 @@ btn[0].addEventListener("click", function(e) {
 
                     }
 
-                    //more here
                     if (this.dataset.t == "true"){
                         scheduleDiv = document.createElement("div");
                         scheduleDiv.classList.add("scheduleItem");
@@ -429,9 +474,9 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTime;
                         scheduleDiv.dataset.endTime = this.dataset.endTime;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "<br/>" + this.dataset.seats +  "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -441,35 +486,44 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "666px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTime);
-                        let endTime = parseInt(this.dataset.endTime) + 10;
+                        let endTime = parseInt(this.dataset.endTime);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -509,7 +563,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
                         scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -523,31 +577,43 @@ btn[0].addEventListener("click", function(e) {
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+
+                        // calculate size
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
+
                         let isNightClass = this.dataset.isNightL
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -585,9 +651,9 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTime;
                         scheduleDiv.dataset.endTime = this.dataset.endTime;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "<br/>" + this.dataset.seats +  "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -597,35 +663,44 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "798px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTime);
-                        let endTime = parseInt(this.dataset.endTime) + 10;
+                        let endTime = parseInt(this.dataset.endTime);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -665,7 +740,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
                         scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -679,31 +754,43 @@ btn[0].addEventListener("click", function(e) {
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+
+                        // calculate size
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
+
                         let isNightClass = this.dataset.isNightL
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -741,9 +828,9 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTime;
                         scheduleDiv.dataset.endTime = this.dataset.endTime;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "<br/>" + this.dataset.seats +  "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -753,35 +840,44 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "930px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTime);
-                        let endTime = parseInt(this.dataset.endTime) + 10;
+                        let endTime = parseInt(this.dataset.endTime);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -821,7 +917,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
                         scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -835,31 +931,43 @@ btn[0].addEventListener("click", function(e) {
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+
+                        // calculate size
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
+
                         let isNightClass = this.dataset.isNightL
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -897,9 +1005,9 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTime;
                         scheduleDiv.dataset.endTime = this.dataset.endTime;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTime + "-" + this.dataset.endTime + "<br/>" + this.dataset.seats +  "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -909,35 +1017,44 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "1062px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTime);
-                        let endTime = parseInt(this.dataset.endTime) + 10;
+                        let endTime = parseInt(this.dataset.endTime);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -977,7 +1094,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
                         scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
                         //styles
-                        scheduleDiv.style.backgroundColor = bgColors[numItems-1];
+                        scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
                         scheduleDiv.style.position = "absolute";
                         scheduleDiv.style.textAlign = "center";
@@ -991,31 +1108,43 @@ btn[0].addEventListener("click", function(e) {
                         if (startTime > endTime){
                             endTime += 1200;
                         }
-                        let size = 1;
+
+                        // calculate size
+                        let size = 0;
                         console.log(startTime + "    " + endTime);
-                        while(endTime - startTime - 100 > 30){
-                            
-                            endTime -= 100;
-                            size++;
-                        } 
-                        // if its 1hr30mins class
-                        if ((endTime - startTime) % 100 == 30){
-                            size+= 0.5;
+
+                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let TimeDif = endTimeEnd2-startTimeEnd2;
+                        if (TimeDif < 0){
+                            TimeDif + 1;
                         }
+                        size+= TimeDif;
+                        let sizeIn100s = (endTime - (endTime % 100)) - (startTime - (startTime % 100));
+                        size += (sizeIn100s)/100;
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
+                        this.dataset.size = size;
+
                         let isNightClass = this.dataset.isNightL
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
 
-                        scheduleDiv.style.fontSize = "18px";
+                        if (size < 1){
+                            scheduleDiv.style.fontSize = "10px";
+                        } else {
+                            scheduleDiv.style.fontSize = "16px";
+                        }
 
                         let subtracted = startTime - 700;
                         let increments = Math.floor(subtracted/100);
-                        if (subtracted % 100 == 30){
-                            increments += .5;
+                        if (subtracted % 100 != 0){
+                            increments += ((subtracted % 100)/60);
+                            if ((subtracted % 100)/60 > 1){
+                                warn("assert error. subtracted/60 > 1");
+                            }
                         }
 
                         scheduleDiv.dataset.length = increments * 100;
@@ -1055,11 +1184,12 @@ btn[0].addEventListener("click", function(e) {
 
 xml.onload = function(){
     var dataReply = JSON.parse(this.responseText);
+    setVisibility(loadingCircle, "hidden");
     if (dataReply.classes == "found") {
         everythingString = dataReply.String;
         var lastIndex = everythingString.lastIndexOf("--");
 
-        //warn
+        //assertions
         if (lastIndex > 400){
             warn("last Index is greater than 400");
         }
@@ -1180,6 +1310,7 @@ xml.onload = function(){
         }
         console.log(options);
         prev = "";
+        // create option for classes (ex: MATH1100)
         for (let i = 0; i < options.length; i++) {
             if (options[i][0] != prev){
                 newOption = document.createElement("option");
