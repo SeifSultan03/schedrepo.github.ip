@@ -1,12 +1,9 @@
-/*xml.onload = function(){
-    var dataReply = JSON.parse(this.responseText);
-    };//endfunction
-
-dataSend= JSON.stringify({
-    'page_data':'some_data'
-});
-
-xml.send(dataSend);*/
+function isCheckBox(el){
+    if (el.type && el.type === 'checkbox') {
+        return true;
+    }
+    return false;
+}
 
 const semesterDropdown = document.getElementById("semester");
 const departmentDropdown = document.getElementById("department");
@@ -14,6 +11,28 @@ const numberDropdown = document.getElementById("number");
 const loadingCircle = document.getElementById("loader");
 btn = document.getElementsByClassName("button");
 scrollPlace = document.getElementsByClassName("flex-container filebrowse-outer");
+
+//get checkboxes
+const TBASwitch = document.getElementById("TBA-switch");
+let TBASwitchChildren = TBASwitch.children;
+var TBACheckBox;
+for (let i = 0; i < TBASwitchChildren.length; i++){
+    let checkbox = isCheckBox(TBASwitchChildren[i]);
+    if (checkbox){
+        TBACheckBox = TBASwitchChildren[i];
+        break;
+    }
+}
+const FULLSwitch = document.getElementById("FULL-switch");
+let FULLSwitchChildren = FULLSwitch.children;
+var FULLCheckBox;
+for (let i = 0; i < FULLSwitchChildren.length; i++){
+    let checkbox = isCheckBox(FULLSwitchChildren[i]);
+    if (checkbox){
+        FULLCheckBox = FULLSwitchChildren[i];
+        break;
+    }
+}
 
 var xml = new XMLHttpRequest();
 var splitTable;
@@ -52,6 +71,48 @@ function getRandColor(){
     let colorStr = "rgb(" + rand1 + ", " + rand2 + ", " + rand3 + ")";
     return colorStr;
 }
+
+var TBAshow = true;
+TBACheckBox.addEventListener("change", function(e){
+    if (TBACheckBox.checked){
+        TBAshow = true;
+        let choices = document.getElementsByClassName("inDiv");
+        for(let i = 0; i < choices.length; i++){
+            if(choices[i].innerHTML.includes("TBA")){
+                choices[i].parentElement.style.display = "inline-block";
+            }
+        }
+    } else {
+        TBAshow = false;
+        let choices = document.getElementsByClassName("inDiv");
+        for(let i = 0; i < choices.length; i++){
+            if(choices[i].innerHTML.includes("TBA")){
+                choices[i].parentElement.style.display = "none";
+            }
+        }
+    }
+})
+
+var FULLshow = true;
+FULLCheckBox.addEventListener("change", function(e){
+    if (FULLCheckBox.checked){
+        FULLshow = true;
+        let choices = document.getElementsByClassName("inDiv");
+        for(let i = 0; i < choices.length; i++){
+            if(choices[i].innerHTML.includes("FULL")){
+                choices[i].parentElement.style.display = "inline-block";
+            }
+        }
+    } else {
+        FULLshow = false;
+        let choices = document.getElementsByClassName("inDiv");
+        for(let i = 0; i < choices.length; i++){
+            if(choices[i].innerHTML.includes("FULL")){
+                choices[i].parentElement.style.display = "none";
+            }
+        }
+    }
+})
 
 semesterDropdown.addEventListener("change", function(e) {
     departmentDropdown.style.visibility = "visible";
@@ -120,6 +181,8 @@ numberDropdown.addEventListener("change", function(e) {
     //extract from given shit
     if (numberDropdown.value != "class"){
         btn[0].style.visibility = "visible";
+        TBASwitch.style.visibility = "visible";
+        FULLSwitch.style.visibility = "visible";
     }
 });
 
@@ -327,7 +390,7 @@ btn[0].addEventListener("click", function(e) {
 
                         scheduleDiv.style.height = (size * 40.5) + "px";
                         this.dataset.size = size;
-                        let isNightClass = this.dataset.isNight
+                        let isNightClass = this.dataset.isNight;
                         if ((isNightClass == true) || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
@@ -384,7 +447,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTimeL;
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "<br/>" + this.dataset.seats + "</strong";
                         //styles
                         scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
@@ -396,7 +459,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "534px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTimeL);
-                        let endTime = parseInt(this.dataset.endTimeL) + 10;
+                        let endTime = parseInt(this.dataset.endTimeL);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
@@ -405,8 +468,8 @@ btn[0].addEventListener("click", function(e) {
                         let size = 0;
                         console.log(startTime + "    " + endTime);
 
-                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
-                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let endTimeEnd2 = parseInt(this.dataset.endTimeL.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTimeL.slice(-2))/60;
                         let TimeDif = endTimeEnd2-startTimeEnd2;
                         if (TimeDif < 0){
                             TimeDif + 1;
@@ -561,7 +624,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTimeL;
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "<br/>" + this.dataset.seats + "</strong";
                         //styles
                         scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
@@ -573,7 +636,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "666px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTimeL);
-                        let endTime = parseInt(this.dataset.endTimeL) + 10;
+                        let endTime = parseInt(this.dataset.endTimeL);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
@@ -582,8 +645,8 @@ btn[0].addEventListener("click", function(e) {
                         let size = 0;
                         console.log(startTime + "    " + endTime);
 
-                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
-                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let endTimeEnd2 = parseInt(this.dataset.endTimeL.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTimeL.slice(-2))/60;
                         let TimeDif = endTimeEnd2-startTimeEnd2;
                         if (TimeDif < 0){
                             TimeDif + 1;
@@ -738,7 +801,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTimeL;
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "<br/>" + this.dataset.seats + "</strong";
                         //styles
                         scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
@@ -750,7 +813,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "798px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTimeL);
-                        let endTime = parseInt(this.dataset.endTimeL) + 10;
+                        let endTime = parseInt(this.dataset.endTimeL);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
@@ -759,8 +822,8 @@ btn[0].addEventListener("click", function(e) {
                         let size = 0;
                         console.log(startTime + "    " + endTime);
 
-                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
-                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let endTimeEnd2 = parseInt(this.dataset.endTimeL.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTimeL.slice(-2))/60;
                         let TimeDif = endTimeEnd2-startTimeEnd2;
                         if (TimeDif < 0){
                             TimeDif + 1;
@@ -915,7 +978,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTimeL;
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "<br/>" + this.dataset.seats + "</strong>" ;
                         //styles
                         scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
@@ -927,7 +990,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "930px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTimeL);
-                        let endTime = parseInt(this.dataset.endTimeL) + 10;
+                        let endTime = parseInt(this.dataset.endTimeL);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
@@ -936,8 +999,8 @@ btn[0].addEventListener("click", function(e) {
                         let size = 0;
                         console.log(startTime + "    " + endTime);
 
-                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
-                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let endTimeEnd2 = parseInt(this.dataset.endTimeL.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTimeL.slice(-2))/60;
                         let TimeDif = endTimeEnd2-startTimeEnd2;
                         if (TimeDif < 0){
                             TimeDif + 1;
@@ -1092,7 +1155,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.dataset.classId = this.dataset.classId;
                         scheduleDiv.dataset.startTime = this.dataset.startTimeL;
                         scheduleDiv.dataset.endTime = this.dataset.endTimeL;
-                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "</strong";
+                        scheduleDiv.innerHTML = "<strong>" + this.dataset.classId + " <br/>" + this.dataset.startTimeL + "-" + this.dataset.endTimeL + "<br/>" + this.dataset.seats + "</strong";
                         //styles
                         scheduleDiv.style.backgroundColor = randColor;
                         scheduleDiv.style.borderColor = this.dataset.color;
@@ -1104,7 +1167,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.left = "1062px"; // LEFT WILL CHANGE DEPENDING ON DAY
                         //calculating size, startTime
                         let startTime = parseInt(this.dataset.startTimeL);
-                        let endTime = parseInt(this.dataset.endTimeL) + 10;
+                        let endTime = parseInt(this.dataset.endTimeL);
                         if (startTime > endTime){
                             endTime += 1200;
                         }
@@ -1113,8 +1176,8 @@ btn[0].addEventListener("click", function(e) {
                         let size = 0;
                         console.log(startTime + "    " + endTime);
 
-                        let endTimeEnd2 = parseInt(this.dataset.endTime.slice(-2))/60;
-                        let startTimeEnd2 = parseInt(this.dataset.startTime.slice(-2))/60;
+                        let endTimeEnd2 = parseInt(this.dataset.endTimeL.slice(-2))/60;
+                        let startTimeEnd2 = parseInt(this.dataset.startTimeL.slice(-2))/60;
                         let TimeDif = endTimeEnd2-startTimeEnd2;
                         if (TimeDif < 0){
                             TimeDif + 1;
@@ -1178,6 +1241,23 @@ btn[0].addEventListener("click", function(e) {
 
 
             })
+        }
+    }
+    if (!FULLshow){
+        let choices = document.getElementsByClassName("inDiv");
+        for(let i = 0; i < choices.length; i++){
+            if(choices[i].innerHTML.includes("FULL")){
+                choices[i].parentElement.style.display = "none";
+            }
+        }
+    }
+
+    if (!TBAshow){
+        let choices = document.getElementsByClassName("inDiv");
+        for(let i = 0; i < choices.length; i++){
+            if(choices[i].innerHTML.includes("TBA")){
+                choices[i].parentElement.style.display = "none";
+            }
         }
     }
 })
