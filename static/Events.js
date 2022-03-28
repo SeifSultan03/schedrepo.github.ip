@@ -408,9 +408,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -499,9 +499,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -586,9 +586,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -676,9 +676,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -853,9 +853,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -940,9 +940,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -1030,9 +1030,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -1117,9 +1117,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
@@ -1207,9 +1207,9 @@ btn[0].addEventListener("click", function(e) {
                         } 
 
                         if (size < 1){
-                            scheduleDiv.style.fontSize = "10px";
+                            scheduleDiv.style.fontSize = "9px";
                         } else {
-                            scheduleDiv.style.fontSize = "16px";
+                            scheduleDiv.style.fontSize = "15px";
                         }
 
                         let subtracted = startTime - 700;
