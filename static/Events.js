@@ -9,7 +9,12 @@ const semesterDropdown = document.getElementById("semester");
 const departmentDropdown = document.getElementById("department");
 const numberDropdown = document.getElementById("number");
 const loadingCircle = document.getElementById("loader");
+const finalizedTab = document.getElementById("finalHolder");
+const fullWarning = document.getElementById("fullWarning");
+const overlapWarning = document.getElementById("overlapWarning");
+const finalTemplate = document.getElementById("keep");
 btn = document.getElementsByClassName("button");
+const btnF = document.getElementsByClassName("buttonF")[0];
 scrollPlace = document.getElementsByClassName("flex-container filebrowse-outer");
 
 //get checkboxes
@@ -47,6 +52,11 @@ function setVisibility(element, visibility){
 function isHidden(el) {
     var style = window.getComputedStyle(el);
     return (style.visibility === 'hidden')
+}
+
+function isHiddenD(el) {
+    var hasDisplayNone = (el.offsetHeight === 0 && el.offsetWidth === 0);
+    return hasDisplayNone;
 }
 
 function removeChildren(parent){
@@ -181,6 +191,7 @@ numberDropdown.addEventListener("change", function(e) {
     //extract from given shit
     if (numberDropdown.value != "class"){
         btn[0].style.visibility = "visible";
+        btnF.style.visibility = "visible";
         TBASwitch.style.visibility = "visible";
         FULLSwitch.style.visibility = "visible";
     }
@@ -1262,6 +1273,71 @@ btn[0].addEventListener("click", function(e) {
     }
 })
 
+//show in finalized form
+btnF.addEventListener("click", function(e){
+    let schedItems = document.getElementsByClassName("scheduleItem");
+    if (schedItems.length < 1){
+        if (!isHiddenD(finalizedTab)){
+            finalizedTab.style.display = "none";
+            return;
+        }
+        warn("You need at least one class to show in finalized form");
+        return;
+    }
+    let clones = document.getElementsByClassName("finalSched");
+    fullWarning.style.display = "none";
+    if (isHiddenD(finalizedTab)){
+        finalizedTab.style.display = "block";
+    } else {
+        finalizedTab.style.display = "none";
+        return;
+    }
+
+    for (let i = 0; i < clones.length; i++){
+        if (clones[i].id != "keep"){
+            console.log(clones.length);
+            clones[i].remove();
+        }
+    }
+
+    for (let i = 0; i < clones.length; i++){
+        for (let j = 0; j < clones.length; j++){
+            if (i != j){
+                console.log(clones[i].innerHTML, clones[j].innerHTML)
+                if (clones[i].innerHTML == clones[j].innerHTML){
+                    clones[i].parentElement.removeChild(clones[i]);
+                }
+            }
+        }  
+    }
+
+    if (isHiddenD(finalizedTab)){
+        return;
+    }
+
+    let current = [];
+    for(let i = 0; i < schedItems.length; i++){
+        //add to current the classes that are on the screen
+        let currentItem = schedItems[i];
+        if (current.length < 1){
+            current.push(currentItem);
+        } else if( currentItem.dataset.classId != current[current.length - 1].dataset.classId ){
+            current.push(currentItem);
+        }
+    }
+    for(let i = 0; i < current.length; i++){
+        if (current[i].innerHTML.includes("FULL")){
+            fullWarning.style.display = "block";
+        }
+
+        let clone = finalTemplate.cloneNode();
+        clone.id = "";
+        let substring = Math.floor(current[i].dataset.classId.length/2);
+        clone.innerHTML = "Department: " + current[i].dataset.classId.substring(0, substring) + ", Course Number: " + current[i].dataset.classId.substring(substring, current[i].dataset.classId.length) + ", Section: " + current[i].dataset.section + ", Credits: " + current[i].dataset.credits;
+        finalTemplate.parentElement.appendChild(clone);
+    }
+})
+
 xml.onload = function(){
     var dataReply = JSON.parse(this.responseText);
     setVisibility(loadingCircle, "hidden");
@@ -1414,4 +1490,4 @@ xml.onload = function(){
     for (let i = 1; i < optionsInDep.length; i++) {
         optionsInDep[i].disabled = false;
     }
-};//endfunction
+};

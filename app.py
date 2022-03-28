@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-print("started")
 base_url = 'http://appl101.lsu.edu/booklet2.nsf/Selector2?OpenForm'
 post_url = 'http://appl101.lsu.edu/booklet2.nsf/f5e6e50d1d1d05c4862584410071cd2e?CreateDocument'
 
@@ -37,12 +36,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    print("went to home")
     return render_template("index.html")
 
 @app.route("/info")
 def info():
-    print("went to home")
     return render_template("page2.html")
 
 print("code reach middle")
@@ -50,7 +47,6 @@ print("code reach middle")
 
 @app.route('/func', methods=['GET','POST'])
 def func():
-    print("shit happened i guess")
     dataGet = '' if not request.get_json(force=True) else request.get_json(force=True)
 
     dataReply = {'backend_data':'some_data'}
@@ -76,12 +72,6 @@ def func():
     return jsonify({"classes": "found",
                     "String": itemsHTML
                     })
-print("code reach end")
-
-
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
