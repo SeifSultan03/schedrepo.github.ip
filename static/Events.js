@@ -1293,22 +1293,11 @@ btnF.addEventListener("click", function(e){
         return;
     }
 
-    for (let i = 0; i < clones.length; i++){
+    for (let i = clones.length - 1; i >= 0; i--){
         if (clones[i].id != "keep"){
             console.log(clones.length);
             clones[i].remove();
         }
-    }
-
-    for (let i = 0; i < clones.length; i++){
-        for (let j = 0; j < clones.length; j++){
-            if (i != j){
-                console.log(clones[i].innerHTML, clones[j].innerHTML)
-                if (clones[i].innerHTML == clones[j].innerHTML){
-                    clones[i].parentElement.removeChild(clones[i]);
-                }
-            }
-        }  
     }
 
     if (isHiddenD(finalizedTab)){
@@ -1330,8 +1319,8 @@ btnF.addEventListener("click", function(e){
             fullWarning.style.display = "block";
         }
 
-        let clone = finalTemplate.cloneNode();
-        clone.id = "";
+        let clone = document.createElement("div")
+        clone.classList.add("finalSched")
         let substring = Math.floor(current[i].dataset.classId.length/2);
         clone.innerHTML = "Department: " + current[i].dataset.classId.substring(0, substring) + ", Course Number: " + current[i].dataset.classId.substring(substring, current[i].dataset.classId.length) + ", Section: " + current[i].dataset.section + ", Credits: " + current[i].dataset.credits;
         finalTemplate.parentElement.appendChild(clone);
