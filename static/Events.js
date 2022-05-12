@@ -402,7 +402,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.height = (size * 40.5) + "px";
                         this.dataset.size = size;
                         let isNightClass = this.dataset.isNight;
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -493,7 +493,7 @@ btn[0].addEventListener("click", function(e) {
                         this.dataset.size = size;
 
                         let isNightClass = this.dataset.isNightL
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -580,7 +580,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.height = (size * 40.5) + "px";
                         this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -670,7 +670,7 @@ btn[0].addEventListener("click", function(e) {
                         this.dataset.size = size;
 
                         let isNightClass = this.dataset.isNightL
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -757,7 +757,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.height = (size * 40.5) + "px";
                         this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -847,7 +847,7 @@ btn[0].addEventListener("click", function(e) {
                         this.dataset.size = size;
 
                         let isNightClass = this.dataset.isNightL
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -934,7 +934,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.height = (size * 40.5) + "px";
                         this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -1024,7 +1024,7 @@ btn[0].addEventListener("click", function(e) {
                         this.dataset.size = size;
 
                         let isNightClass = this.dataset.isNightL
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -1111,7 +1111,7 @@ btn[0].addEventListener("click", function(e) {
                         scheduleDiv.style.height = (size * 40.5) + "px";
                         this.dataset.size = size;
                         let isNightClass = this.dataset.isNight
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
@@ -1201,7 +1201,7 @@ btn[0].addEventListener("click", function(e) {
                         this.dataset.size = size;
 
                         let isNightClass = this.dataset.isNightL
-                        if ((isNightClass == true) || (startTime - 700 < 0)){
+                        if ((isNightClass == "true") || (startTime - 700 < 0)){
                             console.log(isNightClass, startTime - 700);
                             startTime += 1200;
                         } 
