@@ -1,8 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 
+from urllib3.exceptions import InsecureRequestWarning
+from urllib3 import disable_warnings
+
+disable_warnings(InsecureRequestWarning)
+
+
 base_url = 'http://appl101.lsu.edu/booklet2.nsf/Selector2?OpenForm'
 post_url = 'http://appl101.lsu.edu/booklet2.nsf/f5e6e50d1d1d05c4862584410071cd2e?CreateDocument'
+
 
 soup = BeautifulSoup(requests.get(base_url).content, 'lxml')
 
@@ -42,16 +49,17 @@ def home():
 def info():
     return render_template("page2.html")
 
-print("code reach middle")
 #from app import app
 
 @app.route('/func', methods=['GET','POST'])
 def func():
     dataGet = '' if not request.get_json(force=True) else request.get_json(force=True)
 
-    dataReply = {'backend_data':'some_data'}
+    disable_warnings(InsecureRequestWarning)
+
     s = dataGet["semester"]
     d = dataGet["department"]
+    print(s, d)
     data = {
             '%%Surrogate_SemesterDesc':1,
             'SemesterDesc':s,
@@ -59,15 +67,19 @@ def func():
             'Department':d
             }   
 
-    r = requests.post(post_url, data=data)
+    print("555555555555555555")
+    r = requests.post(post_url, data=data, verify=False)
     getUrl = r.url
     print(getUrl)
     if (getUrl == "https://appl101.lsu.edu/booklet2.nsf/NoCourseDept?readform"):
         return jsonify({
             "classes": "notFound"
         })
-    soup = BeautifulSoup(requests.get(getUrl).content, 'html.parser')
+    print("66666666666666666")
+    soup = BeautifulSoup(requests.get(getUrl, verify=False).content, 'html.parser')
+    print("777777777777777777")
     itemsHTML = soup.find('pre').get_text(strip=True)
+    print("78888888777")
     print(itemsHTML)
     return jsonify({"classes": "found",
                     "String": itemsHTML
