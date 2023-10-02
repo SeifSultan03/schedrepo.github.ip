@@ -130,7 +130,6 @@ semesterDropdown.addEventListener("change", function(e) {
     console.log(numIsHidden);
     // if num dropdown is shown then they selected everythin
     if (!numIsHidden) {
-        // send msg to get new shit cuz changed the semester
         var departmentOption = departmentDropdown.value //options[department.selectedIndex].text;
         var semesterOption = semesterDropdown.value
 
@@ -188,7 +187,6 @@ departmentDropdown.addEventListener("change", function(e) {
 });
 
 numberDropdown.addEventListener("change", function(e) {
-    //extract from given shit
     if (numberDropdown.value != "class"){
         btn[0].style.visibility = "visible";
         btnF.style.visibility = "visible";
