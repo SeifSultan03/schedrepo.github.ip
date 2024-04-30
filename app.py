@@ -59,7 +59,6 @@ def func():
 
     s = dataGet["semester"]
     d = dataGet["department"]
-    print(s, d)
     data = {
             '%%Surrogate_SemesterDesc':1,
             'SemesterDesc':s,
@@ -67,7 +66,6 @@ def func():
             'Department':d
             }   
 
-    print("555555555555555555")
     r = requests.post(post_url, data=data, verify=False)
     getUrl = r.url
     print(getUrl)
@@ -75,12 +73,8 @@ def func():
         return jsonify({
             "classes": "notFound"
         })
-    print("66666666666666666")
     soup = BeautifulSoup(requests.get(getUrl, verify=False).content, 'html.parser')
-    print("777777777777777777")
     itemsHTML = soup.find('pre').get_text(strip=True)
-    print("78888888777")
-    print(itemsHTML)
     return jsonify({"classes": "found",
                     "String": itemsHTML
                     })
